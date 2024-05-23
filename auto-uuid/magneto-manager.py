@@ -87,25 +87,26 @@ def get_timezone():
 
 @app.route("/set_timezone", methods=["GET","POST"])
 def set_timezone():
-    new_timezone = request.args.get('timezone', default = None)
+    new_timezone = request.args.get('timezone', default=None)
     if new_timezone is None:
         new_timezone = subprocess.run(
           ["curl", "--fail", "https://ipapi.co/timezone"],
           capture_output=True,
           text=True,
-          check=True,
-    )
+          check=True,)
+        new_timezone = new_timezone.stdout
     timezone = subprocess.run(
-        ["timedatectl", "set-timezone", new_timezone.stdout],
+        ["timedatectl", "set-timezone", new_timezone],
         capture_output=True,
         text=True,
         check=True,
     )
     return jsonify(
         {
-            "timezone": new_timezone.stdout,
+            "timezone": new_timezone,
         }
     )
+
 
 
 @app.route("/connect_lm", methods=["GET"])
